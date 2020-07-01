@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<title>Point Cloud Viewer</title>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+		<link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.6.0/css/font-awesome.min.css" rel="stylesheet">
+		<link href="styles/style.css" rel="stylesheet">
+	</head>
+
+	<body>
+		<nav class="tools">
+			<ul id="tools">
+				<li><a href="#" id="save"><i class="fa fa-floppy-o"></i></a></li>
+                                <li><a href="#" id="export"><i class="fa fa-picture-o"></i></a></li>
+				<li><a href="#" id="move"><i class="fa fa-arrows"></i></a></li>
+				<li><a href="#" class="selected" id="label"><i class="fa fa-pencil"></i></a></li>
+			</ul>
+		</nav>
+		<nav>
+			<ul id="navigation">
+
+			</ul>
+		</nav>
+		<div id="container"></div>
+		<div id="info">Point Cloud Viewer</div>
+
+    <script src="js/libs/three.min.js"></script>
+    <script src="js/libs/OrbitControls.js"></script>
+	<script src="js/libs/Detector.js"></script>
+	<script src="js/libs/stats.min.js"></script>
+    <script src="js/output.js?nocache"></script>
+	<script src="js/libs/FileSaver.min.js"></script>
+	<script type="x-shader/x-vertex" id="vertexshader">
+		attribute float size;
+		attribute vec3 customColor;
+		varying vec3 vColor;
+		void main() {
+			vColor = customColor;
+			vec4 mvPosition = modelViewMatrix * vec4( position, 1.0 );
+			gl_PointSize = size * ( 300.0 / -mvPosition.z );
+			gl_Position = projectionMatrix * mvPosition;
+		}
+	</script>
+
+	<script type="x-shader/x-fragment" id="fragmentshader">
+		uniform vec3 color;
+		uniform sampler2D texture;
+		varying vec3 vColor;
+		void main() {
+			gl_FragColor = vec4( color * vColor, 1.0 );
+			gl_FragColor = gl_FragColor * texture2D( texture, gl_PointCoord );
+			if ( gl_FragColor.a < ALPHATEST ) discard;
+		}
+	</script>
+	<script src="js/mainOLD.js?nocache"></script>
+	</body>
+</html>
